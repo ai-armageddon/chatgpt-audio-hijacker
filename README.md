@@ -4,17 +4,17 @@ A Chrome extension that supercharges ChatGPT's Read Aloud feature with a beautif
 
 ![Extension Icon](icons/icon128.png)
 
-## ✨ Features
+## Features
 
-- 🎯 **One-Click Access** - Blue speaker button injected into every message's action row (no more digging through menus!)
-- 🎛️ **Floating Media Controller** - Sleek, draggable panel with full playback controls
-- ⚡ **Smart Audio Hijacking** - Intercepts OpenAI's native audio stream for seamless control
-- 🎚️ **Playback Speed Control** - Choose from 1x, 1.25x, 1.5x, 1.75x, or 2x speed (persists across sessions)
-- 📍 **Position Memory** - Panel remembers where you dragged it (even after page reload)
-- 🎨 **Modern UI** - Clean, glassmorphic design with consistent blue theming
-- 🔄 **Auto-Hide** - Panel only appears when audio is playing, hides when finished
+- **One-Click Access** - Blue speaker button injected into every message's action row (no more digging through menus!)
+- **Floating Media Controller** - Sleek, draggable panel with full playback controls
+- **Smart Audio Hijacking** - Intercepts OpenAI's native audio stream for seamless control
+- **Playback Speed Control** - Choose from 1x, 1.25x, 1.5x, 1.75x, or 2x speed (persists across sessions)
+- **Position Memory** - Panel remembers where you dragged it (even after page reload)
+- **Modern UI** - Clean, glassmorphic design with consistent blue theming
+- **Auto-Hide** - Panel only appears when audio is playing, hides when finished
 
-## 📸 Screenshots
+## Screenshots
 
 ### Injected Speaker Button
 The blue speaker button appears as the first item in every message's action row:
@@ -34,7 +34,7 @@ Beautiful floating panel with all controls:
 └─────────────────────────┘
 ```
 
-## 🚀 Installation
+## Installation
 
 ### Method 1: Chrome Web Store (Coming Soon)
 *Will be available on the Chrome Web Store once published*
@@ -47,7 +47,7 @@ Beautiful floating panel with all controls:
 5. Click **Load unpacked** and select the extracted folder
 6. Navigate to `https://chatgpt.com` and enjoy!
 
-## 🎮 Usage
+## Usage
 
 1. **Play Audio** - Click the blue speaker button under any ChatGPT message
 2. **Control Playback** - Use the floating panel to play/pause, skip, or seek
@@ -55,7 +55,7 @@ Beautiful floating panel with all controls:
 4. **Reposition Panel** - Drag the panel by its header to your preferred location
 5. **Hide Panel** - Click the × button or let it auto-hide when audio ends
 
-## 🔧 Technical Details
+## Technical Details
 
 ### How It Works
 - **Button Injection**: Uses `MutationObserver` to detect new messages and inject speaker buttons
@@ -70,7 +70,7 @@ Beautiful floating panel with all controls:
 - ✅ All OpenAI voice models
 - ✅ Desktop and laptop browsers
 
-## 🛠️ Development
+## Development
 
 ### Building from Source
 ```bash
@@ -100,7 +100,7 @@ chatgpt-audio-hijacker/
 └── README.md              # This file
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Audio Not Playing
 - **Check Console**: Open DevTools (F12) and look for errors
@@ -121,7 +121,7 @@ chatgpt-audio-hijacker/
 - **Check Permissions**: Make sure it has access to `chatgpt.com`
 - **Reload Extension**: Click the reload button in `chrome://extensions`
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
 
@@ -132,17 +132,17 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - OpenAI for the amazing ChatGPT platform
 - The Chrome extension community for inspiration and tools
 - Radix UI for the accessible component library that ChatGPT uses
 
-## 📞 Support
+## Support
 
 If you encounter any issues or have questions:
 - 🐛 [Report an Issue](https://github.com/yourusername/chatgpt-audio-hijacker/issues)
