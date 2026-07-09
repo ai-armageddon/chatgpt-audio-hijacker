@@ -303,6 +303,10 @@
     });
 
     setPlayIcon(true);
+    // Set play button to blue to match the injected audio button
+    if (ui.playBtn) {
+      ui.playBtn.style.background = '#3b82f6 !important';
+    }
 
     // Transport controls
     ui.playBtn.addEventListener('click', () => {

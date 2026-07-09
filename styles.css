@@ -53,6 +53,7 @@
   padding: 8px 10px;
   background: rgba(255, 255, 255, 0.06);
   cursor: grab;
+  position: relative;
 }
 .cgpt-ah-dragging .cgpt-ah-header {
   cursor: grabbing;
@@ -66,6 +67,7 @@
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+
 .cgpt-ah-close {
   border: none;
   background: transparent;
@@ -110,7 +112,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #10a37f;
+  background: #3b82f6;
   cursor: pointer;
   transition: transform 0.1s ease;
 }
@@ -150,11 +152,11 @@
 .cgpt-ah-play {
   width: 46px;
   height: 46px;
-  background: #10a37f !important;
+  background: #3b82f6 !important;
   color: #fff;
 }
 .cgpt-ah-play:hover {
-  background: #0e8f70 !important;
+  background: #2563eb !important;
 }
 
 .cgpt-ah-skip-label {
