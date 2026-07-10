@@ -1,5 +1,5 @@
 /* ChatGPT Audio Hijacker — content script
- * 1. Injects a speaker button into each assistant message's action row.
+ * 1. Injects a speaker button into playable assistant text response action rows.
  * 2. Clicking it triggers OpenAI's native "Read Aloud" (directly or via the overflow menu).
  * 3. Hijacks the native <audio> element and routes control to a floating, draggable media panel.
  * 4. Persists playback speed and panel position in chrome.storage.local.
@@ -135,15 +135,22 @@
       turn.getAttribute('data-message-author-role') ||
       ''
     ).toLowerCase();
-    if (turnRole) return turnRole === 'assistant';
+    if (turnRole && turnRole !== 'assistant') return false;
 
     const message = turn.querySelector('[data-message-author-role]');
-    return message?.getAttribute('data-message-author-role')?.toLowerCase() === 'assistant';
+    const messageRole = message?.getAttribute('data-message-author-role')?.toLowerCase();
+    if (!turnRole && messageRole !== 'assistant') return false;
+
+    // Read Aloud is only available when the assistant turn contains readable
+    // text. Image-only generations still receive a Copy action row, but their
+    // turn has no assistant text container and therefore no audio to trigger.
+    const assistantMessage = turn.querySelector('[data-message-author-role="assistant"]');
+    return Boolean(assistantMessage?.innerText?.trim());
   }
 
   function findActionRows(root) {
-    // Both user and assistant turns have Copy buttons, so use them only to locate
-    // action rows and then filter those rows by the message author's role.
+    // User turns and image-only assistant turns also have Copy buttons, so use
+    // them only to locate action rows and then require playable assistant text.
     const selector =
       'button[data-testid="copy-turn-action-button"], button[aria-label="Copy" i]';
     const copyButtons = [
