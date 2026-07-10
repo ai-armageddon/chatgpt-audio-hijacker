@@ -123,15 +123,45 @@
   const SPEAKER_SVG =
     '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
 
+  function isAssistantActionRow(row) {
+    const turn = row.closest('[data-testid^="conversation-turn"], article');
+    if (!turn) return false;
+
+    // ChatGPT currently exposes the role on the turn itself (`data-turn`) and/or
+    // on a descendant (`data-message-author-role`). Require an explicit assistant
+    // role so user action rows never receive a button that cannot play anything.
+    const turnRole = (
+      turn.getAttribute('data-turn') ||
+      turn.getAttribute('data-message-author-role') ||
+      ''
+    ).toLowerCase();
+    if (turnRole) return turnRole === 'assistant';
+
+    const message = turn.querySelector('[data-message-author-role]');
+    return message?.getAttribute('data-message-author-role')?.toLowerCase() === 'assistant';
+  }
+
   function findActionRows(root) {
-    // Action rows contain the Copy button on every assistant turn.
-    const copyButtons = root.querySelectorAll(
-      'button[data-testid="copy-turn-action-button"], button[aria-label="Copy" i]'
-    );
+    // Both user and assistant turns have Copy buttons, so use them only to locate
+    // action rows and then filter those rows by the message author's role.
+    const selector =
+      'button[data-testid="copy-turn-action-button"], button[aria-label="Copy" i]';
+    const copyButtons = [
+      ...(root.matches?.(selector) ? [root] : []),
+      ...root.querySelectorAll(selector),
+    ];
     const rows = new Set();
     copyButtons.forEach((btn) => {
       const row = btn.parentElement;
-      if (row) rows.add(row);
+      if (!row) return;
+
+      if (isAssistantActionRow(row)) {
+        rows.add(row);
+      } else {
+        // Clean up a button injected before a turn's role was available or if
+        // ChatGPT reuses DOM while navigating between conversations.
+        row.querySelector(`.${BTN_CLASS}`)?.remove();
+      }
     });
     return rows;
   }

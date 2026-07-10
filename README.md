@@ -6,7 +6,7 @@ A Chrome extension that supercharges ChatGPT's Read Aloud feature with a beautif
 
 ## Features
 
-- **One-Click Access** - Blue speaker button injected into every message's action row (no more digging through menus!)
+- **One-Click Access** - Blue speaker button injected into every assistant response's action row (no more digging through menus!)
 - **Floating Media Controller** - Sleek, draggable panel with full playback controls
 - **Smart Audio Hijacking** - Intercepts OpenAI's native audio stream for seamless control
 - **Playback Speed Control** - Choose from 1x, 1.25x, 1.5x, 1.75x, or 2x speed (persists across sessions)
@@ -17,7 +17,7 @@ A Chrome extension that supercharges ChatGPT's Read Aloud feature with a beautif
 ## Screenshots
 
 ### Injected Speaker Button
-The blue speaker button appears as the first item in every message's action row:
+The blue speaker button appears as the first item in every assistant response's action row:
 
 ```
 [🔵] [Copy] [Dislike] [⋮]
@@ -49,7 +49,7 @@ Beautiful floating panel with all controls:
 
 ## Usage
 
-1. **Play Audio** - Click the blue speaker button under any ChatGPT message
+1. **Play Audio** - Click the blue speaker button under any ChatGPT response
 2. **Control Playback** - Use the floating panel to play/pause, skip, or seek
 3. **Adjust Speed** - Select your preferred playback speed from the dropdown
 4. **Reposition Panel** - Drag the panel by its header to your preferred location
