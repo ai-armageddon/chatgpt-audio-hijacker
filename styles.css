@@ -1,4 +1,8 @@
-/* Injected speaker button in the message action row */
+/* Theme tokens follow ChatGPT's own light/dark class on <html>,
+   so the injected UI always matches the site's current theme. */
+
+/* Injected speaker button in the message action row — ghost style,
+   visually consistent with ChatGPT's native action buttons */
 .cgpt-audio-hijacker-btn {
   display: inline-flex;
   align-items: center;
@@ -8,41 +12,119 @@
   margin-right: 4px;
   border: none;
   border-radius: 50%;
-  background: #3b82f6;
-  color: #ffffff;
+  background: transparent;
+  color: #5d5d5d;
   cursor: pointer;
   flex-shrink: 0;
   align-self: center;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 .cgpt-audio-hijacker-btn:hover {
-  background: #2563eb;
-  transform: scale(1.08);
+  background: rgba(0, 0, 0, 0.07);
+  color: #0d0d0d;
 }
 .cgpt-audio-hijacker-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
+}
+.cgpt-audio-hijacker-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+html.dark .cgpt-audio-hijacker-btn {
+  color: #b4b4b4;
+}
+html.dark .cgpt-audio-hijacker-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ececec;
+}
+
+/* Loading spinner while Read Aloud audio is being fetched */
+.cgpt-audio-hijacker-btn.cgpt-ah-loading {
+  pointer-events: none;
+}
+.cgpt-ah-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: cgpt-ah-spin 0.7s linear infinite;
+}
+@keyframes cgpt-ah-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Floating media controller */
 #cgpt-audio-hijacker-panel {
+  --ah-bg: rgba(255, 255, 255, 0.92);
+  --ah-text: #0d0d0d;
+  --ah-border: rgba(0, 0, 0, 0.1);
+  --ah-header-bg: rgba(0, 0, 0, 0.04);
+  --ah-surface: rgba(0, 0, 0, 0.06);
+  --ah-surface-hover: rgba(0, 0, 0, 0.12);
+  --ah-track: rgba(0, 0, 0, 0.15);
+  --ah-fill: #0d0d0d;
+  --ah-play-bg: #0d0d0d;
+  --ah-play-fg: #ffffff;
+  --ah-play-hover: #2f2f2f;
+
   position: fixed;
   top: 80px;
   right: 24px;
   z-index: 2147483647;
   width: 300px;
+  border: 1px solid var(--ah-border);
   border-radius: 14px;
-  background: rgba(24, 24, 27, 0.95);
-  color: #f4f4f5;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  background: var(--ah-bg);
+  color: var(--ah-text);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 13px;
   user-select: none;
   overflow: hidden;
+
+  /* Hidden by default; .cgpt-ah-visible fades/slides it in.
+     visibility flip is delayed so the fade-out can finish first. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+}
+
+html.dark #cgpt-audio-hijacker-panel {
+  --ah-bg: rgba(24, 24, 27, 0.95);
+  --ah-text: #f4f4f5;
+  --ah-border: rgba(255, 255, 255, 0.12);
+  --ah-header-bg: rgba(255, 255, 255, 0.06);
+  --ah-surface: rgba(255, 255, 255, 0.08);
+  --ah-surface-hover: rgba(255, 255, 255, 0.18);
+  --ah-track: rgba(255, 255, 255, 0.25);
+  --ah-fill: #f4f4f5;
+  --ah-play-bg: #ececec;
+  --ah-play-fg: #0d0d0d;
+  --ah-play-hover: #ffffff;
+
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+#cgpt-audio-hijacker-panel.cgpt-ah-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s;
 }
 
 #cgpt-audio-hijacker-panel.cgpt-ah-dragging {
   cursor: grabbing;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+html.dark #cgpt-audio-hijacker-panel.cgpt-ah-dragging {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
 
@@ -51,7 +133,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--ah-header-bg);
   cursor: grab;
   position: relative;
 }
@@ -59,8 +141,9 @@
   cursor: grabbing;
 }
 .cgpt-ah-grip {
+  display: inline-flex;
+  align-items: center;
   opacity: 0.5;
-  font-size: 14px;
 }
 .cgpt-ah-title {
   flex: 1;
@@ -69,17 +152,24 @@
 }
 
 .cgpt-ah-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
   border: none;
+  border-radius: 6px;
   background: transparent;
   color: inherit;
   font-size: 18px;
   line-height: 1;
   opacity: 0.6;
   cursor: pointer;
-  padding: 0 4px;
+  transition: opacity 0.15s ease, background 0.15s ease;
 }
 .cgpt-ah-close:hover {
   opacity: 1;
+  background: var(--ah-surface);
 }
 
 .cgpt-ah-timeline {
@@ -92,17 +182,25 @@
 .cgpt-ah-total {
   min-width: 34px;
   text-align: center;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
+/* Scrubber track shows playback progress via --ah-pct (set from JS) */
 .cgpt-ah-scrubber {
   flex: 1;
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.25);
+  background: linear-gradient(
+    to right,
+    var(--ah-fill) 0%,
+    var(--ah-fill) var(--ah-pct, 0%),
+    var(--ah-track) var(--ah-pct, 0%),
+    var(--ah-track) 100%
+  );
   outline: none;
   cursor: pointer;
 }
@@ -112,12 +210,21 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: var(--ah-fill);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   cursor: pointer;
   transition: transform 0.1s ease;
 }
 .cgpt-ah-scrubber::-webkit-slider-thumb:hover {
   transform: scale(1.2);
+}
+.cgpt-ah-scrubber::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: var(--ah-fill);
+  cursor: pointer;
 }
 
 .cgpt-ah-controls {
@@ -125,7 +232,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 6px 12px 12px;
+  padding: 8px 12px 12px;
 }
 
 .cgpt-ah-controls button {
@@ -135,13 +242,13 @@
   justify-content: center;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--ah-surface);
   color: inherit;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 .cgpt-ah-controls button:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--ah-surface-hover);
 }
 
 .cgpt-ah-back,
@@ -149,35 +256,46 @@
   width: 38px;
   height: 38px;
 }
-.cgpt-ah-play {
+/* More specific than `.cgpt-ah-controls button`, so no !important needed */
+.cgpt-ah-controls .cgpt-ah-play {
   width: 46px;
   height: 46px;
-  background: #3b82f6 !important;
-  color: #fff;
+  background: var(--ah-play-bg);
+  color: var(--ah-play-fg);
 }
-.cgpt-ah-play:hover {
-  background: #2563eb !important;
+.cgpt-ah-controls .cgpt-ah-play:hover {
+  background: var(--ah-play-hover);
 }
 
 .cgpt-ah-skip-label {
   position: absolute;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 700;
   pointer-events: none;
 }
 
-.cgpt-ah-speed {
+/* Speed is a pill button that cycles through rates on click */
+.cgpt-ah-controls .cgpt-ah-speed {
   margin-left: 4px;
-  padding: 4px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  min-width: 52px;
+  padding: 5px 10px;
+  border: 1px solid var(--ah-border);
+  border-radius: 999px;
+  background: var(--ah-surface);
   color: inherit;
   font-size: 12px;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
-  outline: none;
+  transition: background 0.15s ease;
 }
-.cgpt-ah-speed option {
-  background: #18181b;
-  color: #f4f4f5;
+.cgpt-ah-controls .cgpt-ah-speed:hover {
+  background: var(--ah-surface-hover);
+}
+
+/* Keyboard focus */
+.cgpt-ah-controls button:focus-visible,
+.cgpt-ah-close:focus-visible,
+.cgpt-ah-scrubber:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }

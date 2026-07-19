@@ -6,21 +6,21 @@ A Chrome extension that supercharges ChatGPT's Read Aloud feature with a beautif
 
 ## Features
 
-- **One-Click Access** - Blue speaker button injected into assistant responses with readable text (no more digging through menus!)
+- **One-Click Access** - Speaker button injected into assistant responses with readable text (no more digging through menus!)
 - **Floating Media Controller** - Sleek, draggable panel with full playback controls
 - **Smart Audio Hijacking** - Intercepts OpenAI's native audio stream for seamless control
-- **Playback Speed Control** - Choose from 1x, 1.25x, 1.5x, 1.75x, or 2x speed (persists across sessions)
+- **Playback Speed Control** - Click the speed pill to cycle 1x, 1.25x, 1.5x, 1.75x, or 2x (persists across sessions)
 - **Position Memory** - Panel remembers where you dragged it (even after page reload)
-- **Modern UI** - Clean, glassmorphic design with consistent blue theming
+- **Modern UI** - Clean, glassmorphic design that follows ChatGPT's light/dark theme
 - **Auto-Hide** - Panel only appears when audio is playing, hides when finished
 
 ## Screenshots
 
 ### Injected Speaker Button
-The blue speaker button appears as the first item in assistant response action rows when Read Aloud is available. Image-only responses do not show it:
+A native-looking speaker button appears as the first item in assistant response action rows when Read Aloud is available. Image-only responses do not show it:
 
 ```
-[🔵] [Copy] [Dislike] [⋮]
+[🔊] [Copy] [Dislike] [⋮]
 ```
 
 ### Floating Media Controller
@@ -49,9 +49,9 @@ Beautiful floating panel with all controls:
 
 ## Usage
 
-1. **Play Audio** - Click the blue speaker button under any text-based ChatGPT response
+1. **Play Audio** - Click the speaker button under any text-based ChatGPT response
 2. **Control Playback** - Use the floating panel to play/pause, skip, or seek
-3. **Adjust Speed** - Select your preferred playback speed from the dropdown
+3. **Adjust Speed** - Click the speed pill to cycle through playback speeds
 4. **Reposition Panel** - Drag the panel by its header to your preferred location
 5. **Hide Panel** - Click the × button or let it auto-hide when audio ends
 

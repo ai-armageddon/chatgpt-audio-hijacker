@@ -121,7 +121,37 @@
   /* ---------------- button injection ---------------- */
 
   const SPEAKER_SVG =
-    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+    '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+
+  const GRIP_SVG =
+    '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><circle cx="9" cy="5" r="1.6"/><circle cx="15" cy="5" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg>';
+
+  const SPINNER_HTML = '<span class="cgpt-ah-spinner" aria-hidden="true"></span>';
+
+  /* Loading state on the injected button while Read Aloud fetches audio */
+  let loadingBtn = null;
+  let loadingTimer = null;
+
+  function setBtnLoading(btn) {
+    clearBtnLoading();
+    loadingBtn = btn;
+    btn.classList.add('cgpt-ah-loading');
+    btn.innerHTML = SPINNER_HTML;
+    // Safety net in case playback never starts (e.g. Read Aloud failed).
+    loadingTimer = setTimeout(clearBtnLoading, 8000);
+  }
+
+  function clearBtnLoading() {
+    if (loadingTimer) {
+      clearTimeout(loadingTimer);
+      loadingTimer = null;
+    }
+    if (loadingBtn) {
+      loadingBtn.classList.remove('cgpt-ah-loading');
+      loadingBtn.innerHTML = SPEAKER_SVG;
+      loadingBtn = null;
+    }
+  }
 
   function isAssistantActionRow(row) {
     const turn = row.closest('[data-testid^="conversation-turn"], article');
@@ -178,12 +208,13 @@
     const btn = document.createElement('button');
     btn.className = BTN_CLASS;
     btn.type = 'button';
-    btn.title = 'Play audio (hijacked player)';
-    btn.setAttribute('aria-label', 'Play audio via floating player');
+    btn.title = 'Play audio';
+    btn.setAttribute('aria-label', 'Play audio with floating player');
     btn.innerHTML = SPEAKER_SVG;
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
+      setBtnLoading(btn);
       triggerReadAloud(row);
     });
     row.insertBefore(btn, row.firstChild);
@@ -223,6 +254,7 @@
     const onPlay = () => {
       activeAudio = audio;
       applyPreferredSpeed(audio);
+      clearBtnLoading();
       setPlayIcon(false);
       showPanel();
     };
@@ -274,13 +306,24 @@
       : '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>';
   }
 
+  function updateSpeedBtn() {
+    if (!ui.speedBtn) return;
+    ui.speedBtn.textContent = `${preferredSpeed}x`;
+    ui.speedBtn.setAttribute(
+      'aria-label',
+      `Playback speed ${preferredSpeed}x, click to cycle`
+    );
+  }
+
   function updateTimeline() {
     if (!activeAudio || !ui.scrubber) return;
     const { currentTime, duration } = activeAudio;
     ui.current.textContent = fmtTime(currentTime);
     ui.total.textContent = fmtTime(duration);
     if (isFinite(duration) && duration > 0 && !ui.scrubber.matches(':active')) {
-      ui.scrubber.value = String((currentTime / duration) * 100);
+      const pct = (currentTime / duration) * 100;
+      ui.scrubber.value = String(pct);
+      ui.scrubber.style.setProperty('--ah-pct', `${pct}%`);
     }
   }
 
@@ -289,7 +332,7 @@
     panel.id = PANEL_ID;
     panel.innerHTML = `
       <div class="cgpt-ah-header">
-        <span class="cgpt-ah-grip">⠿</span>
+        <span class="cgpt-ah-grip">${GRIP_SVG}</span>
         <span class="cgpt-ah-title">ChatGPT Audio</span>
         <button class="cgpt-ah-close" title="Hide panel" aria-label="Hide panel">×</button>
       </div>
@@ -308,7 +351,7 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
           <span class="cgpt-ah-skip-label">10</span>
         </button>
-        <select class="cgpt-ah-speed" title="Playback speed" aria-label="Playback speed"></select>
+        <button class="cgpt-ah-speed" type="button" title="Playback speed (click to cycle)"></button>
       </div>
     `;
     document.documentElement.appendChild(panel);
@@ -322,28 +365,20 @@
       backBtn: panel.querySelector('.cgpt-ah-back'),
       playBtn: panel.querySelector('.cgpt-ah-play'),
       fwdBtn: panel.querySelector('.cgpt-ah-fwd'),
-      speedSel: panel.querySelector('.cgpt-ah-speed'),
+      speedBtn: panel.querySelector('.cgpt-ah-speed'),
     };
 
-    // Speed dropdown
-    SPEED_OPTIONS.forEach((s) => {
-      const opt = document.createElement('option');
-      opt.value = String(s);
-      opt.textContent = `${s}x`;
-      if (s === preferredSpeed) opt.selected = true;
-      ui.speedSel.appendChild(opt);
-    });
-    ui.speedSel.addEventListener('change', () => {
-      const speed = parseFloat(ui.speedSel.value);
-      saveSpeed(speed);
-      if (activeAudio) activeAudio.playbackRate = speed;
+    // Speed pill: click cycles through SPEED_OPTIONS
+    updateSpeedBtn();
+    ui.speedBtn.addEventListener('click', () => {
+      const idx = SPEED_OPTIONS.indexOf(preferredSpeed);
+      const next = SPEED_OPTIONS[(idx + 1) % SPEED_OPTIONS.length];
+      saveSpeed(next);
+      updateSpeedBtn();
+      if (activeAudio) activeAudio.playbackRate = next;
     });
 
     setPlayIcon(true);
-    // Set play button to blue to match the injected audio button
-    if (ui.playBtn) {
-      ui.playBtn.style.background = '#3b82f6 !important';
-    }
 
     // Transport controls
     ui.playBtn.addEventListener('click', () => {
@@ -360,13 +395,13 @@
       }
     });
     ui.scrubber.addEventListener('input', () => {
+      // Keep the progress fill in sync while dragging.
+      ui.scrubber.style.setProperty('--ah-pct', `${ui.scrubber.value}%`);
       if (activeAudio && isFinite(activeAudio.duration)) {
         activeAudio.currentTime = (parseFloat(ui.scrubber.value) / 100) * activeAudio.duration;
       }
     });
-    ui.closeBtn.addEventListener('click', () => {
-      panel.style.display = 'none';
-    });
+    ui.closeBtn.addEventListener('click', hidePanel);
 
     // Restore saved position
     if (savedPos && typeof savedPos.top === 'number' && typeof savedPos.left === 'number') {
@@ -374,7 +409,7 @@
     }
 
     makeDraggable();
-    panel.style.display = 'none'; // hidden until audio starts / button clicked
+    // Panel starts hidden via CSS; showPanel() adds .cgpt-ah-visible.
   }
 
   function applyPosition(top, left) {
@@ -416,11 +451,11 @@
   }
 
   function showPanel() {
-    if (panel) panel.style.display = '';
+    if (panel) panel.classList.add('cgpt-ah-visible');
   }
 
   function hidePanel() {
-    if (panel) panel.style.display = 'none';
+    if (panel) panel.classList.remove('cgpt-ah-visible');
   }
 
   /* ---------------- observers ---------------- */
