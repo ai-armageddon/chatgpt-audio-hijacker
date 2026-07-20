@@ -17,22 +17,14 @@ A Chrome extension that supercharges ChatGPT's Read Aloud feature with a beautif
 ## Screenshots
 
 ### Injected Speaker Button
-A native-looking speaker button appears as the first item in assistant response action rows when Read Aloud is available. Image-only responses do not show it:
+A native-looking speaker button appears as the first item in assistant response action rows when Read Aloud is available. Image-only responses do not show it.
 
-```
-[🔊] [Copy] [Dislike] [⋮]
-```
+![Injected speaker button](screenshots/injected-button.png)
 
 ### Floating Media Controller
-Beautiful floating panel with all controls:
+Beautiful floating panel with all playback controls.
 
-```
-┌─────────────────────────┐
-│ ⠿ ChatGPT Audio      × │
-│ 0:00 ━━━━━●━━━━━━ 0:00 │
-│ ⏪10  ⏯  ⏩10  1.5x   │
-└─────────────────────────┘
-```
+![Floating media controller](screenshots/media-controller.png)
 
 ## Installation
 
